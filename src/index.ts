@@ -1,15 +1,11 @@
-import express from "express";
+import Koa from "koa";
 
 const PORT = 3000;
 
-const app = express();
+const app = new Koa();
 
-app.get("/", (req, res) => {
-  res.send("Hello World!" + (new Date().toISOString()));
-});
-
-app.get("/e", () => {
-  throw new Error('DEV');
+app.use(async ctx => {
+  ctx.body = "Hello World!" + (new Date().toISOString());
 });
 
 app.listen(PORT, () => {
