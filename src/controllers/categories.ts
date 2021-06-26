@@ -1,13 +1,9 @@
 import { IMiddleware } from "koa-router";
 import { v4 } from "uuid";
 import { RespondContext } from "../middleware/respond";
-import { Category } from "../models/category";
+import { Category, isCategory } from "../models/category";
 
 const categories: Category[] = [];
-
-function isCategory(val: any): val is Category {
-  return typeof val === "object" && typeof val.name === "string";
-}
 
 export const getAll: IMiddleware<{}, RespondContext> = async (ctx) => {
   return ctx.ok(categories);
