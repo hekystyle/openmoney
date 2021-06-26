@@ -9,7 +9,7 @@ export const getAll: IMiddleware<{}, RespondContext> = async (ctx) => {
   return ctx.ok(categories);
 };
 
-export const get: IMiddleware<{}, RespondContext> = async (ctx) => {
+export const getOne: IMiddleware<{}, RespondContext> = async (ctx) => {
   const id = ctx.params.id;
 
   const cat = categories.find((c) => c.id === id);
@@ -19,7 +19,7 @@ export const get: IMiddleware<{}, RespondContext> = async (ctx) => {
   return ctx.ok(cat);
 };
 
-export const post: IMiddleware<{}, RespondContext> = async (ctx) => {
+export const create: IMiddleware<{}, RespondContext> = async (ctx) => {
   const payload = ctx.request.body;
 
   if (!isCategory(payload)) return ctx.badRequest();
@@ -34,7 +34,7 @@ export const post: IMiddleware<{}, RespondContext> = async (ctx) => {
   return ctx.created(cat);
 };
 
-export const put: IMiddleware<{}, RespondContext> = async (ctx) => {
+export const update: IMiddleware<{}, RespondContext> = async (ctx) => {
   const id = ctx.params.id;
   const payload = ctx.request.body;
 

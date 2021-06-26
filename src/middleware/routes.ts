@@ -1,5 +1,5 @@
 import Router from "koa-router";
-import { del, get, getAll, post, put } from "../controllers/categories";
+import { del, getOne, getAll, create, update } from "../controllers/categories";
 import { RespondContext } from "./respond";
 
 const root = new Router<{}, RespondContext>();
@@ -10,9 +10,9 @@ root.get('/', async ctx => {
 const cats = new Router<{}, RespondContext>();
 cats.prefix('/categories');
 cats.get('/', getAll);
-cats.get('/:id', get);
-cats.post('/', post);
-cats.put('/:id', put);
+cats.get('/:id', getOne);
+cats.post('/', create);
+cats.put('/:id', update);
 cats.delete('/:id', del);
 root.use(cats.middleware());
 
