@@ -1,13 +1,13 @@
 import Router from "koa-router";
 import { del, getOne, getAll, create, update } from "../controllers/categories";
-import { RespondContext } from "./respond";
+import { AppContext } from "../types";
 
-const root = new Router<{}, RespondContext>();
+const root = new Router<{}, AppContext>();
 root.get('/', async ctx => {
   ctx.body = `[${new Date().toISOString()}] Server is running and healthy.`;
 });
 
-const cats = new Router<{}, RespondContext>();
+const cats = new Router<{}, AppContext>();
 cats.prefix('/categories');
 cats.get('/', getAll);
 cats.get('/:id', getOne);

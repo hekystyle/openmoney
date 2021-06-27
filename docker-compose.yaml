@@ -10,3 +10,15 @@ services:
             - .:/workspace
         working_dir: /workspace
         command: yarn start
+
+    db:
+        image: mongo:4
+        ports:
+            - 27017:27017
+        volumes:
+            - db:/data/db
+        environment:
+            MONGO_INITDB_DATABASE: "openmoney"
+
+volumes:
+    db:

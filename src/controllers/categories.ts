@@ -1,62 +1,67 @@
 import { IMiddleware } from "koa-router";
-import { v4 } from "uuid";
-import { RespondContext } from "../middleware/respond";
-import { Category, isCategory } from "../models/category";
+import { Category, categorySchema, isCategory } from "../models/category";
+import { AppContext } from "../types";
 
-const categories: Category[] = [];
+function getRepo(ctx: AppContext) {
+  return ctx.db.model<Category>("category", categorySchema);
+}
 
-export const getAll: IMiddleware<{}, RespondContext> = async (ctx) => {
-  return ctx.ok(categories);
+export const getAll: IMiddleware<{}, AppContext> = async (ctx) => {
+  const repo = getRepo(ctx);
+
+  const cats = await repo.find();
+
+  return ctx.ok(cats);
 };
 
-export const getOne: IMiddleware<{}, RespondContext> = async (ctx) => {
+export const getOne: IMiddleware<{}, AppContext> = async (ctx) => {
   const id = ctx.params.id;
 
-  const cat = categories.find((c) => c.id === id);
+  const repo = getRepo(ctx);
+  const cat = await repo.findById(id);
 
   if (!cat) return ctx.notFound();
 
   return ctx.ok(cat);
 };
 
-export const create: IMiddleware<{}, RespondContext> = async (ctx) => {
+export const create: IMiddleware<{}, AppContext> = async (ctx) => {
   const payload = ctx.request.body;
 
   if (!isCategory(payload)) return ctx.badRequest();
 
-  const cat: Category = {
-    id: v4(),
+  const template: Category = {
     name: payload.name,
   };
 
-  categories.push(cat);
+  const repo = getRepo(ctx);
+  const cat = await repo.create(template);
 
   return ctx.created(cat);
 };
 
-export const update: IMiddleware<{}, RespondContext> = async (ctx) => {
+export const update: IMiddleware<{}, AppContext> = async (ctx) => {
   const id = ctx.params.id;
   const payload = ctx.request.body;
 
   if (!isCategory(payload)) return ctx.badRequest();
 
-  const cat = categories.find((c) => c.id === id);
+  const repo = getRepo(ctx);
+  const cat = await repo.findByIdAndUpdate(id, payload, { new: true });
 
   if (!cat) return ctx.notFound();
-
-  cat.name = payload.name;
 
   return ctx.ok(cat);
 };
 
-export const del: IMiddleware<{}, RespondContext> = async (ctx) => {
+export const del: IMiddleware<{}, AppContext> = async (ctx) => {
   const id = ctx.params.id;
 
-  const idx = categories.findIndex((c) => c.id === id);
+  const repo = getRepo(ctx);
 
-  if (idx === -1) return ctx.notFound();
+  const result = await repo.deleteOne({ _id: id });
 
-  categories.splice(idx, 1);
+  if (result.deletedCount === 0) return ctx.notFound();
 
   return ctx.ok();
 };
