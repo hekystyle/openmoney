@@ -2,12 +2,12 @@ import { IMiddleware } from 'koa-router';
 import { Category, categorySchema, isCategory } from '../models/category';
 import { AppContext } from '../types';
 
-function getRepo(ctx: AppContext) {
+function getRepository(ctx: AppContext) {
   return ctx.db.model<Category>('category', categorySchema);
 }
 
 export const getAll: IMiddleware<{}, AppContext> = async (ctx) => {
-  const repo = getRepo(ctx);
+  const repo = getRepository(ctx);
 
   const cats = await repo.find();
 
@@ -17,7 +17,7 @@ export const getAll: IMiddleware<{}, AppContext> = async (ctx) => {
 export const getOne: IMiddleware<{}, AppContext> = async (ctx) => {
   const { id } = ctx.params;
 
-  const repo = getRepo(ctx);
+  const repo = getRepository(ctx);
   const cat = await repo.findById(id);
 
   if (!cat) return ctx.notFound();
@@ -34,7 +34,7 @@ export const create: IMiddleware<{}, AppContext> = async (ctx) => {
     name: payload.name,
   };
 
-  const repo = getRepo(ctx);
+  const repo = getRepository(ctx);
   const cat = await repo.create(template);
 
   return ctx.created(cat);
@@ -46,7 +46,7 @@ export const update: IMiddleware<{}, AppContext> = async (ctx) => {
 
   if (!isCategory(payload)) return ctx.badRequest();
 
-  const repo = getRepo(ctx);
+  const repo = getRepository(ctx);
   const cat = await repo.findByIdAndUpdate(id, payload, { new: true });
 
   if (!cat) return ctx.notFound();
@@ -57,7 +57,7 @@ export const update: IMiddleware<{}, AppContext> = async (ctx) => {
 export const del: IMiddleware<{}, AppContext> = async (ctx) => {
   const { id } = ctx.params;
 
-  const repo = getRepo(ctx);
+  const repo = getRepository(ctx);
 
   const result = await repo.deleteOne({ _id: id });
 
