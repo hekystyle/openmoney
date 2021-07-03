@@ -1,4 +1,4 @@
-import { Middleware } from "koa";
+import { Middleware } from 'koa';
 
 export type Handler = (body?: any) => void;
 export type EmptyHandler = () => void;
@@ -23,7 +23,7 @@ export const respond = (): Middleware<{}, RespondContext> => (ctx, next) => {
   ctx.badRequest = function badRequest(body) {
     ctx.status = 400;
     ctx.body = body;
-  }
+  };
 
   ctx.notFound = function notFound() {
     ctx.status = 404;

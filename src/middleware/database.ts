@@ -1,7 +1,7 @@
-import { IMiddleware } from "koa-router";
-import mongoose, { Mongoose } from "mongoose";
+import { IMiddleware } from 'koa-router';
+import mongoose, { Mongoose } from 'mongoose';
 
-const DB_URI = "mongodb://db:27017/openmoney";
+const DB_URI = 'mongodb://db:27017/openmoney';
 
 let instance: Mongoose;
 
@@ -23,6 +23,6 @@ export function database(): IMiddleware<{}, DatabaseContext> {
       }
     }
     ctx.db = instance;
-    return await next();
+    await next();
   };
 }

@@ -1,9 +1,9 @@
-import { IMiddleware } from "koa-router";
-import { Category, categorySchema, isCategory } from "../models/category";
-import { AppContext } from "../types";
+import { IMiddleware } from 'koa-router';
+import { Category, categorySchema, isCategory } from '../models/category';
+import { AppContext } from '../types';
 
 function getRepo(ctx: AppContext) {
-  return ctx.db.model<Category>("category", categorySchema);
+  return ctx.db.model<Category>('category', categorySchema);
 }
 
 export const getAll: IMiddleware<{}, AppContext> = async (ctx) => {
@@ -15,7 +15,7 @@ export const getAll: IMiddleware<{}, AppContext> = async (ctx) => {
 };
 
 export const getOne: IMiddleware<{}, AppContext> = async (ctx) => {
-  const id = ctx.params.id;
+  const { id } = ctx.params;
 
   const repo = getRepo(ctx);
   const cat = await repo.findById(id);
@@ -41,7 +41,7 @@ export const create: IMiddleware<{}, AppContext> = async (ctx) => {
 };
 
 export const update: IMiddleware<{}, AppContext> = async (ctx) => {
-  const id = ctx.params.id;
+  const { id } = ctx.params;
   const payload = ctx.request.body;
 
   if (!isCategory(payload)) return ctx.badRequest();
@@ -55,7 +55,7 @@ export const update: IMiddleware<{}, AppContext> = async (ctx) => {
 };
 
 export const del: IMiddleware<{}, AppContext> = async (ctx) => {
-  const id = ctx.params.id;
+  const { id } = ctx.params;
 
   const repo = getRepo(ctx);
 
