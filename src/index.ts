@@ -1,9 +1,9 @@
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
-import { database } from './middleware/database';
+import { database } from './middlewares/database';
 
-import { respond } from './middleware/respond';
-import router from './middleware/routes';
+import { respond } from './middlewares/respond';
+import router from './middlewares/routes';
 
 const PORT = 3000;
 

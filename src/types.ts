@@ -1,4 +1,4 @@
-import { DatabaseContext } from './middleware/database';
-import { RespondContext } from './middleware/respond';
+import { DatabaseContext } from './middlewares/database';
+import { RespondContext } from './middlewares/respond';
 
 export type AppContext = RespondContext & DatabaseContext;
