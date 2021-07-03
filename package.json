@@ -1,6 +1,7 @@
 {
   "name": "openmoney",
   "version": "0.0.1",
+  "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon -V --legacy-watch --watch src --ext ts,json --exec \"node -r ts-node/register --inspect=0.0.0.0 src/index.ts\"",
