@@ -9,7 +9,7 @@ services:
         volumes:
             - .:/workspace
         working_dir: /workspace
-        command: yarn start
+        command: yarn run dev:docker
 
     db:
         image: mongo:4

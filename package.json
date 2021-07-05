@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "start": "nodemon -V --legacy-watch --watch src --ext ts,json --exec \"node -r ts-node/register --inspect=0.0.0.0 src/index.ts\"",
+    "dev:docker": "nodemon -V --legacy-watch --watch src --ext ts,json --exec \"node -r ts-node/register --inspect=0.0.0.0 src/index.ts\"",
     "eslint": "eslint --ext ts src",
     "eslint:fix": "eslint --fix --ext ts src"
   },
