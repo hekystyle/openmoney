@@ -5,7 +5,11 @@ export interface Category {
 }
 
 export function isCategory(val: any): val is Category {
-  return typeof val === 'object' && typeof val.name === 'string';
+  return (
+    val !== null
+    && typeof val === 'object'
+    && typeof val.name === 'string'
+  );
 }
 
 export const categorySchema = new Schema({
