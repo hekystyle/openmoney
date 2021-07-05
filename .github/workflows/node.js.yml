@@ -28,3 +28,4 @@ jobs:
         cache: 'yarn'
     - run: yarn install
     - run: yarn run eslint
+    - run: yarn run test
