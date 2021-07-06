@@ -6,7 +6,7 @@ function getRepository(ctx: AppContext) {
   return ctx.db.model<Category>('category', categorySchema);
 }
 
-export const getAll: IMiddleware<{}, AppContext> = async (ctx) => {
+export const getCategories: IMiddleware<{}, AppContext> = async (ctx) => {
   const repo = getRepository(ctx);
 
   const cats = await repo.find();
@@ -14,7 +14,7 @@ export const getAll: IMiddleware<{}, AppContext> = async (ctx) => {
   return ctx.ok(cats);
 };
 
-export const getOne: IMiddleware<{}, AppContext> = async (ctx) => {
+export const getCategory: IMiddleware<{}, AppContext> = async (ctx) => {
   const { id } = ctx.params;
 
   const repo = getRepository(ctx);
@@ -25,7 +25,7 @@ export const getOne: IMiddleware<{}, AppContext> = async (ctx) => {
   return ctx.ok(cat);
 };
 
-export const create: IMiddleware<{}, AppContext> = async (ctx) => {
+export const createCategory: IMiddleware<{}, AppContext> = async (ctx) => {
   const payload = ctx.request.body;
 
   if (!isCategory(payload)) return ctx.badRequest();
@@ -40,7 +40,7 @@ export const create: IMiddleware<{}, AppContext> = async (ctx) => {
   return ctx.created(cat);
 };
 
-export const update: IMiddleware<{}, AppContext> = async (ctx) => {
+export const updateCategory: IMiddleware<{}, AppContext> = async (ctx) => {
   const { id } = ctx.params;
   const payload = ctx.request.body;
 
@@ -54,7 +54,7 @@ export const update: IMiddleware<{}, AppContext> = async (ctx) => {
   return ctx.ok(cat);
 };
 
-export const del: IMiddleware<{}, AppContext> = async (ctx) => {
+export const deleteCustomer: IMiddleware<{}, AppContext> = async (ctx) => {
   const { id } = ctx.params;
 
   const repo = getRepository(ctx);

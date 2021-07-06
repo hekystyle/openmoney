@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import {
-  del, getOne, getAll, create, update,
+  getCategory, getCategories, createCategory, updateCategory, deleteCustomer,
 } from '../controllers/categories';
 import { AppContext } from '../types';
 
@@ -11,11 +11,11 @@ root.get('/', async (ctx) => {
 
 const cats = new Router<{}, AppContext>();
 cats.prefix('/categories');
-cats.get('/', getAll);
-cats.get('/:id', getOne);
-cats.post('/', create);
-cats.put('/:id', update);
-cats.delete('/:id', del);
+cats.get('/', getCategories);
+cats.get('/:id', getCategory);
+cats.post('/', createCategory);
+cats.put('/:id', updateCategory);
+cats.delete('/:id', deleteCustomer);
 root.use(cats.middleware());
 
 export default () => root.middleware();
