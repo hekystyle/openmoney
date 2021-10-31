@@ -1,5 +1,6 @@
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
+import logger from 'koa-logger';
 import { database } from './middlewares/database';
 
 import { respond } from './middlewares/respond';
@@ -9,6 +10,7 @@ const PORT = 3000;
 
 const app = new Koa();
 
+app.use(logger());
 app.use(database());
 app.use(respond());
 app.use(bodyParser());
