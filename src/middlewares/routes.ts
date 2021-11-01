@@ -2,6 +2,7 @@ import Router from 'koa-router';
 import {
   getCategory, getCategories, createCategory, updateCategory, deleteCustomer,
 } from '../controllers/categories';
+import importRouter from '../controllers/import/router';
 import { AppContext } from '../types';
 
 const root = new Router<{}, AppContext>();
@@ -17,5 +18,7 @@ cats.post('/', createCategory);
 cats.put('/:id', updateCategory);
 cats.delete('/:id', deleteCustomer);
 root.use(cats.middleware());
+
+root.use('/import', importRouter.middleware());
 
 export default () => root.middleware();
