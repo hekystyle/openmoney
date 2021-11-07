@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
     node:
-        image: node:lts
+        image: node:lts-alpine
         ports:
             - 9229:9229
             - 3000:3000

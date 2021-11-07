@@ -19,6 +19,6 @@ cats.put('/:id', updateCategory);
 cats.delete('/:id', deleteCustomer);
 root.use(cats.middleware());
 
-root.use('/import', importRouter.middleware());
+root.use('/import', importRouter.middleware(), importRouter.allowedMethods());
 
 export default () => root.middleware();
