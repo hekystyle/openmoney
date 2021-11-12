@@ -1,44 +1,25 @@
 import Router, { IMiddleware } from 'koa-router';
 import csvParse, { CsvError } from 'csv-parse';
-import util from 'util';
-import stream from 'stream';
 import Joi from 'joi';
 import { AppContext } from '../../types';
-import toArray from '../../utils/stream/pipeline/toArray';
 import { RespondContext } from '../../middlewares/respond';
 import { walletCsvHeaders } from './constants';
-import { getImportingWalletRecordSchema } from './validation';
-import { ImportingWalletRecord } from './types';
-import { parseImportingWalletRecord } from './parsing';
-
-const pipelineAsync = util.promisify(stream.pipeline);
+import { parse, toJsonArray, validate } from './transformers';
 
 const importAction: IMiddleware<{}, AppContext> = async (ctx) => {
-  const rows = await pipelineAsync(
-    ctx.req,
-    csvParse({
-      delimiter: ';',
-      fromLine: 2,
-      columns: [...walletCsvHeaders],
-    }),
-    toArray(),
-  );
+  const stream = ctx.req.pipe(csvParse({
+    delimiter: ';',
+    fromLine: 2,
+    columns: [...walletCsvHeaders],
+  }))
+    .pipe(validate())
+    .pipe(parse())
+    .pipe(toJsonArray());
 
-  const validationResult = Joi.array()
-    .items(getImportingWalletRecordSchema())
-    .validate(rows, {
-      abortEarly: false,
-      allowUnknown: true,
-    });
-
-  if (validationResult.error) throw validationResult.error;
-
-  const validatedRows = rows as ImportingWalletRecord[];
-
-  ctx.ok(validatedRows.map(parseImportingWalletRecord));
+  ctx.json(stream);
 };
 
-const handleCsvError: IMiddleware<{}, RespondContext> = async (ctx, next) => {
+const handleError: IMiddleware<{}, RespondContext> = async (ctx, next) => {
   try {
     return await next();
   } catch (e) {
@@ -52,6 +33,6 @@ const handleCsvError: IMiddleware<{}, RespondContext> = async (ctx, next) => {
 
 const router = new Router<{}, AppContext>();
 
-router.post('/', handleCsvError, importAction);
+router.post('/', handleError, importAction);
 
 export default router;

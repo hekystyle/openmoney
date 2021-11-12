@@ -7,7 +7,7 @@
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "build": "tsc",
-    "dev:docker": "ts-node-dev --respawn --watch=src -- src/index.ts",
+    "dev:docker": "ts-node-dev --debug --respawn --transpile-only -- src/index.ts",
     "eslint": "eslint --ext ts src",
     "eslint:fix": "eslint --fix --ext ts src"
   },
