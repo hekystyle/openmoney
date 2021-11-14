@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 
 export interface Account {
   name: string;
@@ -12,6 +12,8 @@ export function isAccount(val: any): val is Account {
   );
 }
 
-export const accountSchema = new Schema({
-  name: String,
+export const accountSchema = new Schema<Account>({
+  name: { type: String, required: true },
 });
+
+export type AccountModel = Model<Account>;

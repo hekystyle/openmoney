@@ -8,7 +8,9 @@ import { RespondContext } from '../../middlewares/respond';
 import { WALLET_CSV_HEADERS } from './constants';
 import { ProcessingContainer, createParseTransformer, createValidationTransformer } from './transformers';
 import toArray from '../../utils/stream/pipeline/toArray';
-import { ImportError } from './importer';
+import { createImporter, ImportError } from './importer';
+import { accountSchema } from '../../models/account';
+import { categorySchema } from '../../models/category';
 
 const pipelineAsync = util.promisify(pipeline);
 
@@ -27,16 +29,22 @@ const importAction: IMiddleware<{}, AppContext> = async (ctx) => {
 
   if (!allItemsAreValid) return ctx.json(parsedRecords);
 
-  const importedRecords = parsedRecords.map((parsedRecord) => {
+  const importer = createImporter(ctx.db.model('account', accountSchema), ctx.db.model('category', categorySchema));
+  const importedRecords: unknown[] = [];
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const container of parsedRecords) {
+    if (!container.parsed) throw new Error('Not received parsed record');
     try {
-      throw new ImportError('Import is not currently supported.');
+      const importedRecord = await importer(container.parsed);
+      importedRecords.push({ ...container, imported: importedRecord });
     } catch (e) {
       if (e instanceof ImportError) {
-        return { ...parsedRecord, errors: [{ message: e.message }] };
+        importedRecords.push({ ...container, errors: [{ message: e.message }] });
+      } else {
+        throw e;
       }
-      throw e;
     }
-  });
+  }
 
   return ctx.json(importedRecords);
 };

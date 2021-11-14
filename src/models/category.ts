@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 
 export interface Category {
   name: string;
@@ -12,6 +12,8 @@ export function isCategory(val: any): val is Category {
   );
 }
 
-export const categorySchema = new Schema({
-  name: String,
+export const categorySchema = new Schema<Category>({
+  name: { type: String, required: true },
 });
+
+export type CategoryModel = Model<Category>;
