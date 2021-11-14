@@ -1,10 +1,10 @@
-import { walletCsvHeaders } from './constants';
+import { WALLET_CSV_HEADERS } from './constants';
 
 type ObjectFromList<T extends ReadonlyArray<string>, V = string> = {
   [K in (T extends ReadonlyArray<infer U> ? U : never)]: V
 };
 
-export type ImportingWalletRecord = ObjectFromList<typeof walletCsvHeaders>;
+export type ImportingWalletRecord = ObjectFromList<typeof WALLET_CSV_HEADERS>;
 
 export enum WalletRecordType {
   Income = 'Income',

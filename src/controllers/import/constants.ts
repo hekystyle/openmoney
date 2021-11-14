@@ -1,4 +1,4 @@
-export const walletCsvHeaders = [
+export const WALLET_CSV_HEADERS = [
   'accountName',
   'categoryName',
   'currency',
@@ -20,4 +20,4 @@ export const walletCsvHeaders = [
   'isCategoryCustom',
 ] as const;
 
-export default walletCsvHeaders;
+export default WALLET_CSV_HEADERS;

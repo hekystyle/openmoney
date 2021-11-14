@@ -1,22 +1,44 @@
+import util from 'util';
+import { pipeline } from 'stream';
 import Router, { IMiddleware } from 'koa-router';
 import csvParse, { CsvError } from 'csv-parse';
 import Joi from 'joi';
 import { AppContext } from '../../types';
 import { RespondContext } from '../../middlewares/respond';
-import { walletCsvHeaders } from './constants';
-import { parse, toJsonArray, validate } from './transformers';
+import { WALLET_CSV_HEADERS } from './constants';
+import { ProcessingContainer, createParseTransformer, createValidationTransformer } from './transformers';
+import toArray from '../../utils/stream/pipeline/toArray';
+import { ImportError } from './importer';
+
+const pipelineAsync = util.promisify(pipeline);
 
 const importAction: IMiddleware<{}, AppContext> = async (ctx) => {
+  let allItemsAreValid = true;
+
   const stream = ctx.req.pipe(csvParse({
     delimiter: ';',
     fromLine: 2,
-    columns: [...walletCsvHeaders],
+    columns: [...WALLET_CSV_HEADERS],
   }))
-    .pipe(validate())
-    .pipe(parse())
-    .pipe(toJsonArray());
+    .pipe(createValidationTransformer(() => { allItemsAreValid = false; }))
+    .pipe(createParseTransformer(() => { allItemsAreValid = false; }));
 
-  ctx.json(stream);
+  const parsedRecords = await pipelineAsync(stream, toArray) as ProcessingContainer[];
+
+  if (!allItemsAreValid) return ctx.json(parsedRecords);
+
+  const importedRecords = parsedRecords.map((parsedRecord) => {
+    try {
+      throw new ImportError('Import is not currently supported.');
+    } catch (e) {
+      if (e instanceof ImportError) {
+        return { ...parsedRecord, errors: [{ message: e.message }] };
+      }
+      throw e;
+    }
+  });
+
+  return ctx.json(importedRecords);
 };
 
 const handleError: IMiddleware<{}, RespondContext> = async (ctx, next) => {
