@@ -1,5 +1,5 @@
-import { AccountModel } from '../../models/account';
-import { CategoryModel } from '../../models/category';
+import { AccountModel } from '../../../models/account';
+import { CategoryModel } from '../../../models/category';
 import { ParsedWalletRecord } from './types';
 
 export class ImportError extends Error {}
