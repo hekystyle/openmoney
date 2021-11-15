@@ -8,9 +8,6 @@ import { RespondContext } from '../../middlewares/respond';
 import { WALLET_CSV_HEADERS } from './wallet/constants';
 import { ProcessingContainer, createParseTransformer, createValidationTransformer } from './wallet/transformers';
 import toArray from '../../utils/stream/pipeline/toArray';
-import { createImporter, ImportError } from './importer';
-import { accountSchema } from '../../models/account';
-import { categorySchema } from '../../models/category';
 
 const pipelineAsync = util.promisify(pipeline);
 
@@ -29,24 +26,27 @@ const importAction: IMiddleware<{}, AppContext> = async (ctx) => {
 
   if (!allItemsAreValid) return ctx.json(parsedRecords);
 
-  const importer = createImporter(ctx.db.model('account', accountSchema), ctx.db.model('category', categorySchema));
-  const importedRecords: unknown[] = [];
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const container of parsedRecords) {
-    if (!container.parsed) throw new Error('Not received parsed record');
-    try {
-      const importedRecord = await importer(container.parsed);
-      importedRecords.push({ ...container, imported: importedRecord });
-    } catch (e) {
-      if (e instanceof ImportError) {
-        importedRecords.push({ ...container, errors: [{ message: e.message }] });
-      } else {
-        throw e;
-      }
-    }
-  }
+  // const importer = createImporter(
+  //   ctx.db.model('account', accountSchema),
+  //   ctx.db.model('category', categorySchema)
+  // );
+  // const importedRecords: unknown[] = [];
+  // // eslint-disable-next-line no-restricted-syntax
+  // for await (const container of parsedRecords) {
+  //   if (!container.parsed) throw new Error('Not received parsed record');
+  //   try {
+  //     const importedRecord = await importer(container.parsed);
+  //     importedRecords.push({ ...container, imported: importedRecord });
+  //   } catch (e) {
+  //     if (e instanceof ImportError) {
+  //       importedRecords.push({ ...container, errors: [{ message: e.message }] });
+  //     } else {
+  //       throw e;
+  //     }
+  //   }
+  // }
 
-  return ctx.json(importedRecords);
+  return ctx.json(parsedRecords);
 };
 
 const handleError: IMiddleware<{}, RespondContext> = async (ctx, next) => {
