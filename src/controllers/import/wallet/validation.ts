@@ -9,7 +9,7 @@ RawRecord
   accountName: Joi.string().required(),
   amount: Joi.number().required(),
   categoryName: Joi.string().required(),
-  currency: Joi.string().required(),
+  currency: Joi.string().case('upper').required(),
   date: Joi.date().required(),
   envelopeId: Joi.number().required(),
   gpsAccuracyInMeters: Joi.number().allow('').required(),
