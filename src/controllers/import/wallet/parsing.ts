@@ -35,7 +35,7 @@ export function parseRawRecord(rec: RawRecord): ParsedRecord {
     payee,
     amount: parseFloat(rec.amount),
     monthsCountOfWarranty: parseFloat(rec.monthsCountOfWarranty),
-    labels: rec.labels.split('|'),
+    labels: rec.labels !== '' ? rec.labels.split('|') : [],
     type: rec.type as RecordType,
     date: parseDate(rec.date),
     isTransfer: parseBool(rec.isTransfer),
