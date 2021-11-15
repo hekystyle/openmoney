@@ -8,7 +8,7 @@ import { RespondContext } from '../../middlewares/respond';
 import { WALLET_CSV_HEADERS } from './wallet/constants';
 import { ProcessingContainer, createParseTransformer, createValidationTransformer } from './wallet/transformers';
 import toArray from '../../utils/stream/pipeline/toArray';
-import { createImporter, ImportError } from './wallet/importer';
+import { createImporter, ImportError } from './importer';
 import { accountSchema } from '../../models/account';
 import { categorySchema } from '../../models/category';
 
