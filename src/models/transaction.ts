@@ -16,10 +16,12 @@ export const transactionSchema = new Schema<Transaction>({
   categoryID: { type: mongoose.SchemaTypes.ObjectId, required: true },
   date: { type: Date, required: true },
   amount: { type: Number, required: true },
-  note: { type: String, required: true },
+  note: { type: String },
   labels: { type: [mongoose.SchemaTypes.ObjectId], required: true },
-  counterparty: { type: String, required: true },
+  counterparty: { type: String },
   monthsCountOfWarranty: { type: Number, required: true },
+}, {
+  versionKey: false,
 });
 
 export type TransactionModel = Model<Transaction>;
