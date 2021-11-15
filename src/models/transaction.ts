@@ -6,7 +6,7 @@ export interface Transaction {
   date: Date;
   amount: number;
   note: string;
-  labels: string[];
+  labels: mongoose.Types.ObjectId[];
   counterparty: string;
   monthsCountOfWarranty: number;
 }
