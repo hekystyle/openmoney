@@ -8,6 +8,8 @@ import { RespondContext } from '../../middlewares/respond';
 import { WALLET_CSV_HEADERS } from './wallet/constants';
 import { ProcessingContainer, createParseTransformer, createValidationTransformer } from './wallet/transformers';
 import toArray from '../../utils/stream/pipeline/toArray';
+import { AdapterError, createTransactionAdapter } from './wallet/adapters';
+import { createTransactionImporter, ImportError } from './importer';
 
 const pipelineAsync = util.promisify(pipeline);
 
@@ -22,31 +24,44 @@ const importAction: IMiddleware<{}, AppContext> = async (ctx) => {
     .pipe(createValidationTransformer(() => { allItemsAreValid = false; }))
     .pipe(createParseTransformer(() => { allItemsAreValid = false; }));
 
-  const parsedRecords = await pipelineAsync(stream, toArray) as ProcessingContainer[];
+  const parsedContainers = await pipelineAsync(stream, toArray) as ProcessingContainer[];
 
-  if (!allItemsAreValid) return ctx.json(parsedRecords);
+  if (!allItemsAreValid) return ctx.json(parsedContainers);
 
-  // const importer = createImporter(
-  //   ctx.db.model('account', accountSchema),
-  //   ctx.db.model('category', categorySchema)
-  // );
-  // const importedRecords: unknown[] = [];
-  // // eslint-disable-next-line no-restricted-syntax
-  // for await (const container of parsedRecords) {
-  //   if (!container.parsed) throw new Error('Not received parsed record');
-  //   try {
-  //     const importedRecord = await importer(container.parsed);
-  //     importedRecords.push({ ...container, imported: importedRecord });
-  //   } catch (e) {
-  //     if (e instanceof ImportError) {
-  //       importedRecords.push({ ...container, errors: [{ message: e.message }] });
-  //     } else {
-  //       throw e;
-  //     }
-  //   }
-  // }
+  const adapter = createTransactionAdapter();
+  const importer = createTransactionImporter();
 
-  return ctx.json(parsedRecords);
+  const transactionContainersWithTriedImport = await Promise.all(parsedContainers.filter(
+    (container) => container.parsed?.isTransfer === false,
+  ).map(async (container) => {
+    if (!container.parsed) throw new Error('Parsed record not received');
+
+    try {
+      const transaction = await adapter(container.parsed);
+      return { ...container, transaction };
+    } catch (e) {
+      if (e instanceof AdapterError) {
+        return { ...container, errors: [{ message: e.message }] };
+      }
+      throw e;
+    }
+  }).map(async (promise) => {
+    const container = await promise;
+    if (!container.transaction) return container;
+    try {
+      const transactionDocument = await importer(container.transaction);
+      return { ...container, imported: transactionDocument };
+    } catch (e) {
+      if (e instanceof ImportError) {
+        return { ...container, errors: [{ message: e.message }] };
+      }
+      throw e;
+    }
+  }));
+
+  // TODO: handle transfers import
+
+  return ctx.json(transactionContainersWithTriedImport);
 };
 
 const handleError: IMiddleware<{}, RespondContext> = async (ctx, next) => {

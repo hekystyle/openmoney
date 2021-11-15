@@ -1,4 +1,5 @@
-import { Transaction, TransactionDocument, TransactionModel } from '../../models/transaction';
+import { accountModel } from '../../models/account';
+import { Transaction, TransactionDocument, transactionModel } from '../../models/transaction';
 
 export class ImportError extends Error {}
 
@@ -7,13 +8,13 @@ export class ImportError extends Error {}
  */
 export type TransactionImporter = (transaction: Transaction) => Promise<TransactionDocument>;
 
-export function createTransactionImporter(transactions: TransactionModel): TransactionImporter {
+export function createTransactionImporter(): TransactionImporter {
   return async (transaction) => {
     const {
       accountID, categoryID, date, amount,
     } = transaction;
 
-    const count = await transactions.count({
+    const count = await transactionModel.countDocuments({
       accountID, categoryID, date, amount,
     });
 
@@ -21,6 +22,17 @@ export function createTransactionImporter(transactions: TransactionModel): Trans
       throw new ImportError('Already imported');
     }
 
-    return transactions.create(transaction);
+    const transactionDocument = await transactionModel.create(transaction);
+
+    const account = await accountModel.findById(transaction.accountID);
+    if (account === null) {
+      throw new Error(`Account not found by ID: ${transaction.accountID}`);
+    }
+
+    account.balance += transaction.amount;
+
+    await account.save();
+
+    return transactionDocument;
   };
 }

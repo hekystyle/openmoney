@@ -1,4 +1,4 @@
-import { Model, Schema } from 'mongoose';
+import { model, Model, Schema } from 'mongoose';
 
 export interface Category {
   name: string;
@@ -9,3 +9,5 @@ export const categorySchema = new Schema<Category>({
 });
 
 export type CategoryModel = Model<Category>;
+
+export const categoryModel = model<Category, CategoryModel>('category', categorySchema);

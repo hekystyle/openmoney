@@ -2,11 +2,14 @@ import { Transform } from 'stream';
 import { getRawRecordSchema } from './validation';
 import { parseRawRecord, ParseError } from './parsing';
 import { RawRecord, ParsedRecord } from './types';
+import { Transaction, TransactionDocument } from '../../../models/transaction';
 
 export interface ProcessingContainer {
   errors: { message: string }[];
   raw: RawRecord;
   parsed?: ParsedRecord;
+  transaction?: Transaction;
+  imported?: TransactionDocument;
 }
 
 export const createValidationTransformer = (onValidationError?: () => void) => new Transform({

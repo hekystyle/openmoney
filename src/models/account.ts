@@ -1,4 +1,4 @@
-import { Model, Schema } from 'mongoose';
+import { model, Model, Schema } from 'mongoose';
 
 export interface Account {
   name: string;
@@ -13,3 +13,5 @@ export const accountSchema = new Schema<Account>({
 });
 
 export type AccountModel = Model<Account>;
+
+export const accountModel = model<Account, AccountModel>('account', accountSchema);

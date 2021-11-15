@@ -1,4 +1,6 @@
-import mongoose, { Document, Model, Schema } from 'mongoose';
+import mongoose, {
+  Document, model, Model, Schema,
+} from 'mongoose';
 
 export interface Transaction {
   accountID: mongoose.Types.ObjectId;
@@ -25,5 +27,7 @@ export const transactionSchema = new Schema<Transaction>({
 });
 
 export type TransactionModel = Model<Transaction>;
+
+export const transactionModel = model<Transaction, TransactionModel>('transaction', transactionSchema);
 
 export type TransactionDocument = Transaction & Document<mongoose.Types.ObjectId, {}, {}>;
