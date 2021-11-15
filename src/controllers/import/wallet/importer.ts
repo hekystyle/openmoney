@@ -1,13 +1,13 @@
 import { AccountModel } from '../../../models/account';
 import { CategoryModel } from '../../../models/category';
-import { ParsedWalletRecord } from './types';
+import { ParsedRecord } from './types';
 
 export class ImportError extends Error {}
 
 /**
  * @throws {ImportError}
  */
-export type Importer = (record: ParsedWalletRecord) => Promise<void>;
+export type Importer = (record: ParsedRecord) => Promise<void>;
 
 export function createImporter(accounts: AccountModel, categories: CategoryModel): Importer {
   return async (rec) => {

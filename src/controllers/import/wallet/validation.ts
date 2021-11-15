@@ -1,10 +1,10 @@
 import Joi from 'joi';
-import { ImportingWalletRecord as IImportingWalletRecord, WalletRecordType } from './types';
+import { RawRecord, RecordType } from './types';
 
-export const getImportingWalletRecordSchema = () => Joi.object<
-IImportingWalletRecord,
+export const getRawRecordSchema = () => Joi.object<
+RawRecord,
 false,
-IImportingWalletRecord
+RawRecord
 >({
   accountName: Joi.string().required(),
   amount: Joi.number().required(),
@@ -24,7 +24,7 @@ IImportingWalletRecord
   paymentType: Joi.string().required(),
   paymentTypeLocal: Joi.string().required(),
   refCurrencyAmount: Joi.string().required(),
-  type: Joi.string().valid(WalletRecordType.Income, WalletRecordType.Expenses).required(),
+  type: Joi.string().valid(RecordType.Income, RecordType.Expenses).required(),
 });
 
-export default getImportingWalletRecordSchema;
+export default getRawRecordSchema;

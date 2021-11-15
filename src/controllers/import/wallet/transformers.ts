@@ -1,12 +1,12 @@
 import { Transform } from 'stream';
-import { getImportingWalletRecordSchema } from './validation';
-import { parseImportingWalletRecord, ParseError } from './parsing';
-import { ImportingWalletRecord, ParsedWalletRecord } from './types';
+import { getRawRecordSchema } from './validation';
+import { parseRawRecord, ParseError } from './parsing';
+import { RawRecord, ParsedRecord } from './types';
 
 export interface ProcessingContainer {
   errors: { message: string }[];
-  raw: ImportingWalletRecord;
-  parsed?: ParsedWalletRecord;
+  raw: RawRecord;
+  parsed?: ParsedRecord;
 }
 
 export const createValidationTransformer = (onValidationError?: () => void) => new Transform({
@@ -14,7 +14,7 @@ export const createValidationTransformer = (onValidationError?: () => void) => n
   writableObjectMode: true,
   readableObjectMode: true,
   transform: (chunk: unknown, enc, next) => {
-    const validationResult = getImportingWalletRecordSchema().validate(chunk, {
+    const validationResult = getRawRecordSchema().validate(chunk, {
       abortEarly: false,
       allowUnknown: true,
     });
@@ -34,7 +34,7 @@ export const createParseTransformer = (onParseError?: () => void) => new Transfo
     if (chunk.errors.length > 0) return next(null, chunk);
 
     try {
-      const parsed = parseImportingWalletRecord(chunk.raw);
+      const parsed = parseRawRecord(chunk.raw);
 
       return next(null, { ...chunk, parsed });
     } catch (e) {
