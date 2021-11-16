@@ -6,10 +6,11 @@ import { ProcessingContainer, createParseTransformer, createValidationTransforme
 import toArray from '../../../utils/stream/pipeline/toArray';
 import { AdapterError, createTransactionAdapter } from './adapters';
 import { createTransactionImporter, ImportError } from '../importer';
+import { ImportResult } from '../types';
 
 const pipelineAsync = util.promisify(pipeline);
 
-export default async function importFile(file: Readable) {
+export default async function importFile(file: Readable): Promise<ImportResult> {
   let allItemsAreValid = true;
 
   const stream = file.pipe(csvParse({
