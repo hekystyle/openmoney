@@ -6,7 +6,7 @@ import { RespondContext } from '../../middlewares/respond';
 import wallet from './wallet';
 
 const importAction: IMiddleware<{}, AppContext> = async (ctx) => {
-  ctx.json(wallet.importFile(ctx.req));
+  ctx.json(await wallet.importFile(ctx.req));
 };
 
 const handleError: IMiddleware<{}, RespondContext> = async (ctx, next) => {
