@@ -4,8 +4,8 @@ import csvParse from 'csv-parse';
 import { WALLET_CSV_HEADERS } from './constants';
 import { ProcessingContainer, createParseTransformer, createValidationTransformer } from './transformers';
 import toArray from '../../../utils/stream/pipeline/toArray';
-import { AdapterError, createTransactionAdapter } from './adapters';
-import { createTransactionImporter, ImportError } from '../importer';
+import { AdapterError, adaptTransaction } from './adapters';
+import { importTransaction, ImportError } from '../importer';
 import { ImportResult } from '../types';
 
 const pipelineAsync = util.promisify(pipeline);
@@ -25,16 +25,13 @@ export default async function importFile(file: Readable): Promise<ImportResult> 
 
   if (!allItemsAreValid) return parsedContainers;
 
-  const adapter = createTransactionAdapter();
-  const importer = createTransactionImporter();
-
   const transactionContainersWithTriedImport = await Promise.all(parsedContainers.filter(
     (container) => container.parsed?.isTransfer === false,
   ).map(async (container) => {
     if (!container.parsed) throw new Error('Parsed record not received');
 
     try {
-      const transaction = await adapter(container.parsed);
+      const transaction = await adaptTransaction(container.parsed);
       return { ...container, transaction };
     } catch (e) {
       if (e instanceof AdapterError) {
@@ -46,7 +43,7 @@ export default async function importFile(file: Readable): Promise<ImportResult> 
     const container = await promise;
     if (!container.transaction) return container;
     try {
-      const transactionDocument = await importer(container.transaction);
+      const transactionDocument = await importTransaction(container.transaction);
       return { ...container, imported: transactionDocument };
     } catch (e) {
       if (e instanceof ImportError) {
