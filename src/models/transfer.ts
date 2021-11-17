@@ -24,6 +24,6 @@ export const transferSchema = new Schema<Transfer, TransferModel>({
   versionKey: false,
 });
 
-export const transferModel = model<Transfer, TransferModel, {}>('transaction', transferSchema);
+export const transferModel = model<Transfer, TransferModel, {}>('transfer', transferSchema);
 
 export type TransferDocument = Transfer & Document<mongoose.Types.ObjectId, {}, {}>;
