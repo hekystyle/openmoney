@@ -3,10 +3,10 @@ import mongoose, {
 } from 'mongoose';
 
 export interface Transfer {
-  sourceAccountID: mongoose.Types.ObjectId;
-  targetAccountID: mongoose.Types.ObjectId;
+  accountID: mongoose.Types.ObjectId;
   date: Date;
   amount: number;
+  currency: string;
   note: string;
   labels: mongoose.Types.ObjectId[];
 }
@@ -14,11 +14,11 @@ export interface Transfer {
 export type TransferModel = Model<Transfer, {}, {}>;
 
 export const transferSchema = new Schema<Transfer, TransferModel>({
-  sourceAccountID: { type: mongoose.SchemaTypes.ObjectId, required: true },
-  targetAccountID: { type: mongoose.SchemaTypes.ObjectId, required: true },
+  accountID: { type: mongoose.SchemaTypes.ObjectId, required: true },
   date: { type: Date, required: true },
   amount: { type: Number, required: true },
-  note: { type: String },
+  currency: { type: String, required: true, uppercase: true },
+  note: { type: String, trim: true },
   labels: { type: [mongoose.SchemaTypes.ObjectId], required: true },
 }, {
   versionKey: false,

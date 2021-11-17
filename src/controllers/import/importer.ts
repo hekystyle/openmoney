@@ -45,22 +45,15 @@ export const importTransfer: TransferImporter = async (transfer) => {
 
   if (transferDocument !== null) return transferDocument;
 
-  const sourceAccount = await accountModel.findById(transfer.sourceAccountID);
-  if (sourceAccount === null) {
-    throw new Error(`Source account not found by ID: ${transfer.sourceAccountID}`);
+  const accountDocument = await accountModel.findById(transfer.accountID);
+  if (accountDocument === null) {
+    throw new Error(`Account not found by ID: ${transfer.accountID}`);
   }
 
-  const targetAccount = await accountModel.findById(transfer.targetAccountID);
-  if (targetAccount === null) {
-    throw new Error(`Target account not found by ID: ${transfer.targetAccountID}`);
-  }
-
-  sourceAccount.balance -= transfer.amount;
-  targetAccount.balance += transfer.amount;
+  accountDocument.balance -= transfer.amount;
 
   transferDocument = await transferModel.create(transfer);
-  await sourceAccount.save();
-  await targetAccount.save();
+  await accountDocument.save();
 
   return transferDocument;
 };
