@@ -1,5 +1,5 @@
 import { accountModel } from '../../models/account';
-import { Transaction, TransactionDocument, transactionModel } from '../../models/transaction';
+import { Transaction, transactionModel } from '../../models/transaction';
 import { Transfer, TransferDocument, transferModel } from '../../models/transfer';
 
 export class ImportError extends Error {}
@@ -7,22 +7,20 @@ export class ImportError extends Error {}
 /**
  * @throws {ImportError}
  */
-export type TransactionImporter = (transaction: Transaction) => Promise<TransactionDocument>;
+export type TransactionImporter = (transaction: Transaction) => Promise<Transaction>;
 
 export const importTransaction: TransactionImporter = async (transaction) => {
   const {
     accountID, categoryID, date, amount,
   } = transaction;
 
-  const count = await transactionModel.countDocuments({
+  let transactionDocument = await transactionModel.findOne({
     accountID, categoryID, date, amount,
   });
 
-  if (count > 0) {
-    throw new ImportError('Already imported');
-  }
+  if (transactionDocument) return transactionDocument;
 
-  const transactionDocument = await transactionModel.create(transaction);
+  transactionDocument = await transactionModel.create(transaction);
 
   const account = await accountModel.findById(transaction.accountID);
   if (account === null) {

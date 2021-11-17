@@ -1,59 +1,47 @@
 import util from 'util';
 import { pipeline, Readable } from 'stream';
 import csvParse from 'csv-parse';
+import Joi from 'joi';
 import { WALLET_CSV_HEADERS } from './constants';
-import { ProcessingContainer, createParseTransformer, createValidationTransformer } from './transformers';
 import toArray from '../../../utils/stream/pipeline/toArray';
 import { AdapterError, adaptTransaction } from './adapters';
 import { importTransaction, ImportError } from '../importer';
-import { ImportResult } from '../types';
+import { ImportedItemResult, ImportResult } from '../types';
+import { RawRecord } from './types';
+import { validateRawRecord } from './validation';
+import { ParseError, parseRawRecord } from './parsing';
 
 const pipelineAsync = util.promisify(pipeline);
 
 export default async function importFile(file: Readable): Promise<ImportResult> {
-  let allItemsAreValid = true;
-
   const stream = file.pipe(csvParse({
     delimiter: ';',
     fromLine: 2,
     columns: [...WALLET_CSV_HEADERS],
-  }))
-    .pipe(createValidationTransformer(() => { allItemsAreValid = false; }))
-    .pipe(createParseTransformer(() => { allItemsAreValid = false; }));
-
-  const parsedContainers = await pipelineAsync(stream, toArray) as ProcessingContainer[];
-
-  if (!allItemsAreValid) return parsedContainers;
-
-  const transactionContainersWithTriedImport = await Promise.all(parsedContainers.filter(
-    (container) => container.parsed?.isTransfer === false,
-  ).map(async (container) => {
-    if (!container.parsed) throw new Error('Parsed record not received');
-
-    try {
-      const transaction = await adaptTransaction(container.parsed);
-      return { ...container, transaction };
-    } catch (e) {
-      if (e instanceof AdapterError) {
-        return { ...container, errors: [{ message: e.message }] };
-      }
-      throw e;
-    }
-  }).map(async (promise) => {
-    const container = await promise;
-    if (!container.transaction) return container;
-    try {
-      const transactionDocument = await importTransaction(container.transaction);
-      return { ...container, imported: transactionDocument };
-    } catch (e) {
-      if (e instanceof ImportError) {
-        return { ...container, errors: [{ message: e.message }] };
-      }
-      throw e;
-    }
   }));
 
-  // TODO: handle transfers import
+  const rawRecords = await pipelineAsync(stream, toArray) as RawRecord[];
 
-  return transactionContainersWithTriedImport;
+  return Promise.all(
+    rawRecords.map(async (rawRecord): Promise<ImportedItemResult> => {
+      try {
+        validateRawRecord(rawRecord);
+        const parsedRecord = parseRawRecord(rawRecord);
+        if (parsedRecord.isTransfer) {
+          return { status: 'error', errors: [{ message: 'Transfer import is not currently supported.' }], data: rawRecord };
+        }
+        const transaction = await adaptTransaction(parsedRecord);
+        await importTransaction(transaction);
+        return { status: 'ok', data: rawRecord };
+      } catch (e) {
+        if (e instanceof Joi.ValidationError) {
+          return { status: 'error', errors: e.details, data: rawRecord };
+        }
+        if (e instanceof ParseError || e instanceof AdapterError || e instanceof ImportError) {
+          return { status: 'error', errors: [{ message: e.message }], data: rawRecord };
+        }
+        throw e;
+      }
+    }),
+  );
 }

@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import { RawRecord, RecordType } from './types';
 
-export const getRawRecordSchema = () => Joi.object<
+const getRawRecordSchema = () => Joi.object<
 RawRecord,
 false,
 RawRecord
@@ -27,4 +27,15 @@ RawRecord
   type: Joi.string().valid(RecordType.Income, RecordType.Expenses).required(),
 });
 
-export default getRawRecordSchema;
+/**
+ * @throws {Joi.ValidationError}
+ */
+export function validateRawRecord(record: RawRecord): void {
+  const validationResult = getRawRecordSchema().validate(record, {
+    abortEarly: false,
+    allowUnknown: true,
+  });
+  if (validationResult.error) throw validationResult.error;
+}
+
+export default validateRawRecord;
