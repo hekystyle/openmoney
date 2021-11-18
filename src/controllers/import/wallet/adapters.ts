@@ -45,7 +45,7 @@ export const adaptTransaction: TransactionAdapter = async (rec): Promise<Transac
     date: rec.date,
     note: rec.note,
     // eslint-disable-next-line no-underscore-dangle
-    labels: labelDocuments.map((document) => document._id),
+    labelsID: labelDocuments.map((document) => document._id),
     counterparty: rec.payee,
     monthsCountOfWarranty: rec.monthsCountOfWarranty,
   };

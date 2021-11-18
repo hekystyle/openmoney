@@ -8,7 +8,7 @@ export interface Transfer {
   amount: number;
   currency: string;
   note: string;
-  labels: mongoose.Types.ObjectId[];
+  labelsID: mongoose.Types.ObjectId[];
 }
 
 export type TransferModel = Model<Transfer, {}, {}>;
@@ -19,7 +19,7 @@ export const transferSchema = new Schema<Transfer, TransferModel>({
   amount: { type: Number, required: true },
   currency: { type: String, required: true, uppercase: true },
   note: { type: String, trim: true },
-  labels: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+  labelsID: { type: [mongoose.SchemaTypes.ObjectId], required: true },
 }, {
   versionKey: false,
 });

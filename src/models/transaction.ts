@@ -8,7 +8,7 @@ export interface Transaction {
   date: Date;
   amount: number;
   note: string;
-  labels: mongoose.Types.ObjectId[];
+  labelsID: mongoose.Types.ObjectId[];
   counterparty: string;
   monthsCountOfWarranty: number;
 }
@@ -19,7 +19,7 @@ export const transactionSchema = new Schema<Transaction>({
   date: { type: Date, required: true },
   amount: { type: Number, required: true },
   note: { type: String },
-  labels: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+  labelsID: { type: [mongoose.SchemaTypes.ObjectId], required: true },
   counterparty: { type: String },
   monthsCountOfWarranty: { type: Number, required: true },
 }, {
