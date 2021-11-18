@@ -4,6 +4,7 @@ import {
 } from '../controllers/categories';
 import importRouter from '../controllers/import/router';
 import { AppContext } from '../types';
+import accountsRouter from '../controllers/accounts/router';
 
 const root = new Router<{}, AppContext>();
 root.get('/', async (ctx) => {
@@ -20,5 +21,6 @@ cats.delete('/:id', deleteCustomer);
 root.use(cats.middleware());
 
 root.use('/import', importRouter.middleware(), importRouter.allowedMethods());
+root.use('/accounts', accountsRouter.middleware(), accountsRouter.allowedMethods());
 
 export default () => root.middleware();

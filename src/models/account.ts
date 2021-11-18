@@ -10,6 +10,8 @@ export const accountSchema = new Schema<Account>({
   name: { type: String, required: true },
   balance: { type: Number, required: true },
   currency: { type: String, required: true },
+}, {
+  versionKey: false,
 });
 
 export type AccountModel = Model<Account>;
