@@ -6,9 +6,9 @@ export interface Transfer {
   accountID: mongoose.Types.ObjectId;
   date: Date;
   amount: number;
-  currency: string;
   note: string;
   labelsID: mongoose.Types.ObjectId[];
+  counterparty?: string;
 }
 
 export type TransferModel = Model<Transfer, {}, {}>;
@@ -17,9 +17,9 @@ export const transferSchema = new Schema<Transfer, TransferModel>({
   accountID: { type: mongoose.SchemaTypes.ObjectId, required: true },
   date: { type: Date, required: true },
   amount: { type: Number, required: true },
-  currency: { type: String, required: true, uppercase: true },
   note: { type: String, trim: true },
   labelsID: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+  counterparty: { type: String, trim: true },
 }, {
   versionKey: false,
 });
