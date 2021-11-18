@@ -48,7 +48,7 @@ export const importTransfer: TransferImporter = async (transfer) => {
     throw new Error(`Account not found by ID: ${transfer.accountID}`);
   }
 
-  accountDocument.balance -= transfer.amount;
+  accountDocument.balance += transfer.amount;
 
   transferDocument = await transferModel.create(transfer);
   await accountDocument.save();
