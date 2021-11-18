@@ -1,6 +1,6 @@
 import { IMiddleware } from 'koa-router';
-import { Category, categorySchema } from '../models/category';
-import { AppContext } from '../types';
+import { Category, categorySchema } from '../../models/category';
+import { AppContext } from '../../types';
 
 function getRepository(ctx: AppContext) {
   return ctx.db.model<Category>('category', categorySchema);

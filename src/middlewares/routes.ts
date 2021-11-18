@@ -1,24 +1,15 @@
 import Router from 'koa-router';
-import {
-  getCategory, getCategories, createCategory, updateCategory, deleteCustomer,
-} from '../controllers/categories';
 import importRouter from '../controllers/import/router';
 import { AppContext } from '../types';
 import accountsRouter from '../controllers/accounts/router';
+import categoriesRouter from '../controllers/categories/router';
 
 const root = new Router<{}, AppContext>();
 root.get('/', async (ctx) => {
   ctx.body = `[${new Date().toISOString()}] Server is running and healthy.`;
 });
 
-const cats = new Router<{}, AppContext>();
-cats.prefix('/categories');
-cats.get('/', getCategories);
-cats.get('/:id', getCategory);
-cats.post('/', createCategory);
-cats.put('/:id', updateCategory);
-cats.delete('/:id', deleteCustomer);
-root.use(cats.middleware());
+root.use('/categories', categoriesRouter.middleware(), categoriesRouter.allowedMethods());
 
 root.use('/import', importRouter.middleware(), importRouter.allowedMethods());
 root.use('/accounts', accountsRouter.middleware(), accountsRouter.allowedMethods());
