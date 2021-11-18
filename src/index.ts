@@ -16,7 +16,9 @@ app.use(respond());
 app.use(bodyParser());
 app.use(router());
 
+// eslint-disable-next-line no-console
+console.log('Creating HTTP server ...');
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
-  console.log(`Example app listening at http://localhost:${PORT}`);
+  console.log(`App listening at http://localhost:${PORT}`);
 });

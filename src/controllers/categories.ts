@@ -1,5 +1,5 @@
 import { IMiddleware } from 'koa-router';
-import { Category, categorySchema, isCategory } from '../models/category';
+import { Category, categorySchema } from '../models/category';
 import { AppContext } from '../types';
 
 function getRepository(ctx: AppContext) {
@@ -28,7 +28,7 @@ export const getCategory: IMiddleware<{}, AppContext> = async (ctx) => {
 export const createCategory: IMiddleware<{}, AppContext> = async (ctx) => {
   const payload = ctx.request.body;
 
-  if (!isCategory(payload)) return ctx.badRequest();
+  // TODO: validate payload
 
   const template: Category = {
     name: payload.name,
@@ -44,7 +44,7 @@ export const updateCategory: IMiddleware<{}, AppContext> = async (ctx) => {
   const { id } = ctx.params;
   const payload = ctx.request.body;
 
-  if (!isCategory(payload)) return ctx.badRequest();
+  // TODO: validate payload
 
   const repo = getRepository(ctx);
   const cat = await repo.findByIdAndUpdate(id, payload, { new: true });
