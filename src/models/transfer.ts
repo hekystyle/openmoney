@@ -18,7 +18,7 @@ export const transferSchema = new Schema<Transfer, TransferModel>({
   date: { type: Date, required: true },
   amount: { type: Number, required: true },
   note: { type: String, trim: true },
-  labelsID: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+  labelsID: { type: [], of: mongoose.SchemaTypes.ObjectId, required: true },
   counterparty: { type: String, trim: true },
 }, {
   versionKey: false,

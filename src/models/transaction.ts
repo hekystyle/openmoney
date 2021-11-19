@@ -19,7 +19,7 @@ export const transactionSchema = new Schema<Transaction>({
   date: { type: Date, required: true },
   amount: { type: Number, required: true },
   note: { type: String },
-  labelsID: { type: [mongoose.SchemaTypes.ObjectId], required: true },
+  labelsID: { type: [], of: mongoose.SchemaTypes.ObjectId, required: true },
   counterparty: { type: String },
   monthsCountOfWarranty: { type: Number, required: true },
 }, {

@@ -13,10 +13,7 @@ export function database(): IMiddleware<{}, DatabaseContext> {
   return async (ctx, next) => {
     if (!instance) {
       try {
-        instance = await mongoose.connect(DB_URI, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        });
+        instance = await mongoose.connect(DB_URI);
       } catch {
         ctx.status = 503;
         return;
