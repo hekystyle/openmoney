@@ -10,7 +10,7 @@ on:
     branches: [ master ]
 
 jobs:
-  lint:
+  deps:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,6 +27,23 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       - run: yarn install
+
+  lint:
+    needs: [deps]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+          cache: "yarn"
+
+      - name: Restore node_modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       - run: yarn run lint
 
