@@ -8,8 +8,8 @@
     "test:watch": "jest --watch",
     "build": "tsc",
     "dev:docker": "ts-node-dev --debug --respawn --transpile-only --poll -- src/index.ts",
-    "eslint": "eslint --ext ts src",
-    "eslint:fix": "eslint --fix --ext ts src"
+    "lint": "eslint --ext ts src",
+    "lint:fix": "eslint --fix --ext ts src"
   },
   "repository": {
     "type": "git",
