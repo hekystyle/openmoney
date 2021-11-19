@@ -6,7 +6,7 @@
     "prepare": "husky install",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
-    "build": "tsc",
+    "build": "tsc --build",
     "dev:docker": "ts-node-dev --debug --respawn --transpile-only --poll -- src/index.ts",
     "lint": "eslint --ext ts src",
     "lint:fix": "eslint --fix --ext ts src"
