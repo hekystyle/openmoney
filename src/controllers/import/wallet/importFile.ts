@@ -1,6 +1,6 @@
 import util from 'util';
 import { pipeline, Readable } from 'stream';
-import csvParse from 'csv-parse';
+import { Parser } from 'csv-parse';
 import Joi from 'joi';
 import { WALLET_CSV_HEADERS } from './constants';
 import toArray from '../../../utils/stream/pipeline/toArray';
@@ -14,7 +14,7 @@ import { ParseError, parseRawRecord } from './parsing';
 const pipelineAsync = util.promisify(pipeline);
 
 export default async function importFile(file: Readable): Promise<ImportResult> {
-  const stream = file.pipe(csvParse({
+  const stream = file.pipe(new Parser({
     delimiter: ';',
     fromLine: 2,
     columns: [...WALLET_CSV_HEADERS],
