@@ -14,4 +14,5 @@ root.use('/categories', categoriesRouter.middleware(), categoriesRouter.allowedM
 root.use('/import', importRouter.middleware(), importRouter.allowedMethods());
 root.use('/accounts', accountsRouter.middleware(), accountsRouter.allowedMethods());
 
-export default () => root.middleware();
+export const router = () => root.middleware();
+export const allowedMethods = () => root.allowedMethods();
