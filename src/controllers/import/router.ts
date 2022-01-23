@@ -1,12 +1,19 @@
 import Router, { IMiddleware } from 'koa-router';
 import { CsvError } from 'csv-parse';
 import Joi from 'joi';
+import { groupBy, prop } from 'ramda';
 import { AppContext } from '../../types';
 import { RespondContext } from '../../middlewares/respond';
 import wallet from './wallet';
 
 const importAction: IMiddleware<{}, AppContext> = async (ctx) => {
-  ctx.json(await wallet.importFile(ctx.req));
+  const result = await wallet.importFile(ctx.req);
+
+  if (ctx.query.groupBy === 'status') {
+    return ctx.json(groupBy(prop('status'), result));
+  }
+
+  return ctx.json(result);
 };
 
 const handleError: IMiddleware<{}, RespondContext> = async (ctx, next) => {
